@@ -107,7 +107,7 @@ def sbm_finetune(source_loader, target_loader, target_name , num_epochs, ):
        
         loss_MSE = nn.MSELoss()
         loss_CE = nn.CrossEntropyLoss()
-        optimizer = optim.Adam(model.parameters(), lr = 0.001, weight_decay = 0.0001)
+        optimizer = optim.Adam(model.parameters(), lr = 0.001)
         ###############################################################################################
 
         train_accuracy = 0.0
