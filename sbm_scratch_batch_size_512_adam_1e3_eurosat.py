@@ -180,7 +180,7 @@ if __name__=='__main__':
     image_size = 224
     
     #mini_imagenet_path = '/content/miniImagenet/'
-    base_loader = miniImageNet_few_shot.get_data_loader(configs.miniImageNet_path, batch_size = 512)
+    base_loader = miniImageNet_few_shot.get_data_loader(configs.miniImageNet_path, batch_size = 256)
 
 
     ##################################################################
@@ -196,7 +196,7 @@ if __name__=='__main__':
     
     print ("Loading EuroSAT")
     #unlabelled_path = '/content/eurosat_unlabel'
-    unlabelled_loader = miniImageNet_few_shot.unlabelled_loader(configs.EuroSAT_unlabelled_path, batch_size = 512)
+    unlabelled_loader = miniImageNet_few_shot.unlabelled_loader(configs.EuroSAT_unlabelled_path, batch_size = 256)
     unlabelled_loaders.append(unlabelled_loader)
     
     #print ("Loading CropDisease")

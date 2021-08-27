@@ -63,6 +63,15 @@ def regret_stat(source_stat, model):
             i += 1
     return model
 
+def initialize_weights(model):
+    # Initializes weights according to the DCGAN paper
+    for m in model.modules():
+        if isinstance(m, nn.Conv2d):
+            nn.init.xavier_uniform(m.weight)
+        elif isinstance(m, nn.Linear):
+            torch.nn.init.xavier_uniform(m.weight)
+            m.bias.data.fill_(0.01)
+
 
 def shift_affine(source_stat, model):
     total_shift = 0
