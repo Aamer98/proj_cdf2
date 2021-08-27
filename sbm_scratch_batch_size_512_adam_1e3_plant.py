@@ -16,7 +16,6 @@ import torch.backends.cudnn as cudnn
 
 from datasets import miniImageNet_few_shot
 import configs
-import backbone
 from methods.protonet import ProtoNet
 
 
