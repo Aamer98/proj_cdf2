@@ -11,7 +11,6 @@ import glob
 from itertools import combinations
 
 import configs
-import backbone
 from data.datamgr import SimpleDataManager, SetDataManager
 
 from io_utils import model_dict, parse_args, get_resume_file, get_best_file, get_assigned_file 

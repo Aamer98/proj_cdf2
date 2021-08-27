@@ -13,7 +13,6 @@ import os
 import glob
 
 import configs
-import backbone
 
 from io_utils import parse_args, get_resume_file  
 from datasets import miniImageNet_few_shot, DTD_few_shot

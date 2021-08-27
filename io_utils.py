@@ -2,7 +2,6 @@ import numpy as np
 import os
 import glob
 import argparse
-import backbone
 
 #model_dict = dict(
 #            ResNet10 = backbone.ResNet10)

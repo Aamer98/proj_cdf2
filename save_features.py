@@ -6,7 +6,6 @@ import glob
 import h5py
 
 import configs
-import backbone
 from data.datamgr import SimpleDataManager
 from methods.baselinetrain import BaselineTrain
 from methods.baselinefinetune import BaselineFinetune

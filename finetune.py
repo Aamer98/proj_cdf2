@@ -13,7 +13,6 @@ import torchvision
 
 from datasets import miniImageNet_few_shot
 import configs
-import backbone
 from data.datamgr import SimpleDataManager, SetDataManager
 from methods.protonet import ProtoNet
 
