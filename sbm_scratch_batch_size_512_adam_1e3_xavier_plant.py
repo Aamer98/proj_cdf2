@@ -69,8 +69,9 @@ def initialize_weights(model):
         if isinstance(m, nn.Conv2d):
             nn.init.xavier_uniform(m.weight)
         elif isinstance(m, nn.Linear):
-            torch.nn.init.xavier_uniform(m.weight)
+            nn.init.xavier_uniform(m.weight)
             m.bias.data.fill_(0.01)
+    return model
 
 
 def shift_affine(source_stat, model):
@@ -102,6 +103,7 @@ def sbm_finetune(source_loader, target_loader, target_name , num_epochs, ):
     
 
     model.fc = nn.Linear(512, 64)
+    model = initialize_weights(model)
     model.cuda()
     model.train()
 
