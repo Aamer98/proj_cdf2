@@ -192,7 +192,7 @@ if __name__=='__main__':
     image_size = 224
     
     #mini_imagenet_path = '/content/miniImagenet/'
-    base_loader = miniImageNet_few_shot.get_data_loader(configs.miniImageNet_path, batch_size = 256)
+    base_loader = miniImageNet_few_shot.get_data_loader(configs.miniImageNet_path, batch_size = 128)
 
 
     ##################################################################
@@ -212,7 +212,7 @@ if __name__=='__main__':
     #unlabelled_loaders.append(unlabelled_loader)
     
     print ("Loading CropDisease")
-    unlabelled_loader = miniImageNet_few_shot.unlabelled_loader(configs.CropDisease_unlabelled_path, batch_size = 256)
+    unlabelled_loader = miniImageNet_few_shot.unlabelled_loader(configs.CropDisease_unlabelled_path, batch_size = 128)
     unlabelled_loaders.append(unlabelled_loader)
     
     #print ("Loading ChestX")

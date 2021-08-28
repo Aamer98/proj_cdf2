@@ -63,6 +63,16 @@ def regret_stat(source_stat, model):
             i += 1
     return model
 
+def initialize_weights(model):
+    # Initializes weights according to the DCGAN paper
+    for m in model.modules():
+        if isinstance(m, nn.Conv2d):
+            nn.init.xavier_uniform(m.weight)
+        elif isinstance(m, nn.Linear):
+            nn.init.xavier_uniform(m.weight)
+            m.bias.data.fill_(0.01)
+    return model
+
 
 def shift_affine(source_stat, model):
     total_shift = 0
@@ -84,21 +94,25 @@ def shift_affine(source_stat, model):
 def sbm_finetune(source_loader, target_loader, target_name , num_epochs, ): 
     
 
+    m_name = 'sbm_scratch_xavier'
+    print(m_name)
     ###############################################################################################
     # load resnet18 model
-    save_dir = './logs/sbm_scratch_1e4/plant_disease/'    
+    save_dir = './logs/{}/'.format(m_name)
     model = torchvision.models.resnet18(pretrained = False)
+    
     #model.load_state_dict(torch.load('./logs/resnet18_imgnet.tar'))
     
     
 
     model.fc = nn.Linear(512, 64)
+    model = initialize_weights(model)
     model.cuda()
     model.train()
 
     for epoch in range(num_epochs):
         
-
+        
         
         ###############################################################################################
        
@@ -163,7 +177,7 @@ def sbm_finetune(source_loader, target_loader, target_name , num_epochs, ):
         print("epoch: {}/{}".format(epoch, num_epochs))
         if (epoch % 25==0):
 
-            torch.save(model.state_dict(), save_dir + '{}_epoch{}_sbm_scratch_batch_size_512.pth'.format(target_name, epoch))
+            torch.save(model.state_dict(), save_dir + '{}_epoch{}_{}.pth'.format(target_name, epoch, m_name))
 
 
 
@@ -184,7 +198,7 @@ if __name__=='__main__':
     ##################################################################
     pretrained_dataset = "miniImageNet"
 
-    dataset_names = [ "CropDisease"]
+    dataset_names = [ "EuroSAT"]
     unlabelled_loaders = []
 
     #print ("Loading ISIC")
@@ -192,14 +206,14 @@ if __name__=='__main__':
     #novel_loader        = datamgr.get_data_loader(aug =False)
     #novel_loaders.append(novel_loader)
     
-    #print ("Loading EuroSAT")
-    #unlabelled_path = '/content/eurosat_unlabel'
-    #unlabelled_loader = miniImageNet_few_shot.unlabelled_loader(configs.EuroSAT_unlabelled_path, batch_size = 512)
-    #unlabelled_loaders.append(unlabelled_loader)
-    
-    print ("Loading CropDisease")
-    unlabelled_loader = miniImageNet_few_shot.unlabelled_loader(configs.CropDisease_unlabelled_path, batch_size = 128)
+    print ("Loading EuroSAT")
+    unlabelled_path = '/content/eurosat_unlabel'
+    unlabelled_loader = miniImageNet_few_shot.unlabelled_loader(configs.EuroSAT_unlabelled_path, batch_size = 128)
     unlabelled_loaders.append(unlabelled_loader)
+    
+    #print ("Loading CropDisease")
+    #unlabelled_loader = miniImageNet_few_shot.unlabelled_loader(configs.CropDisease_unlabelled_path, batch_size = 256)
+    #unlabelled_loaders.append(unlabelled_loader)
     
     #print ("Loading ChestX")
     #datamgr             =  Chest_few_shot.SetDataManager(image_size, n_eposide = iter_num, n_query = 15, **few_shot_params)
