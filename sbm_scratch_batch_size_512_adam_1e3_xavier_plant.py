@@ -94,10 +94,13 @@ def shift_affine(source_stat, model):
 def sbm_finetune(source_loader, target_loader, target_name , num_epochs, ): 
     
 
+    m_name = 'sbm_scratch_xavier'
+    print(m_name)
     ###############################################################################################
     # load resnet18 model
-    save_dir = './logs/sbm_scratch_1e4/plant_disease/'    
+    save_dir = './logs/{}/'.format(m_name)
     model = torchvision.models.resnet18(pretrained = False)
+    
     #model.load_state_dict(torch.load('./logs/resnet18_imgnet.tar'))
     
     
@@ -109,7 +112,7 @@ def sbm_finetune(source_loader, target_loader, target_name , num_epochs, ):
 
     for epoch in range(num_epochs):
         
-
+        
         
         ###############################################################################################
        
@@ -174,7 +177,7 @@ def sbm_finetune(source_loader, target_loader, target_name , num_epochs, ):
         print("epoch: {}/{}".format(epoch, num_epochs))
         if (epoch % 25==0):
 
-            torch.save(model.state_dict(), save_dir + '{}_epoch{}_sbm_scratch_batch_size_512.pth'.format(target_name, epoch))
+            torch.save(model.state_dict(), save_dir + '{}_epoch{}_{}.pth'.format(target_name, epoch, m_name))
 
 
 
