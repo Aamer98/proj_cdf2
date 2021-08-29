@@ -86,7 +86,7 @@ def sbm_finetune(source_loader, target_loader, target_name , num_epochs):
 
     ###############################################################################################
     # load resnet18 model
-    save_dir = './logs/sbm_scratch_1e3/'    
+    save_dir = './logs/sbm_scratch_adam_1e3/'    
     model = torchvision.models.resnet18(pretrained = False)
     #model.load_state_dict(torch.load('./logs/resnet18_imgnet.tar'))
     
