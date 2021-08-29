@@ -8,6 +8,406 @@ from torch.nn.parameter import Parameter
 import os
 
 
+"""
+    Common routines for models in PyTorch.
+"""
+
+__all__ = ['round_channels', 'Identity', 'BreakBlock', 'Swish', 'HSigmoid', 'HSwish', 'get_activation_layer',
+           'SelectableDense', 'DenseBlock', 'ConvBlock1d', 'conv1x1', 'conv3x3', 'depthwise_conv3x3', 'ConvBlock',
+           'conv1x1_block', 'conv3x3_block', 'conv5x5_block', 'conv7x7_block', 'dwconv_block', 'dwconv3x3_block',
+           'dwconv5x5_block', 'dwsconv3x3_block', 'PreConvBlock', 'pre_conv1x1_block', 'pre_conv3x3_block',
+           'AsymConvBlock', 'asym_conv3x3_block', 'DeconvBlock', 'deconv3x3_block', 'NormActivation',
+           'InterpolationBlock', 'ChannelShuffle', 'ChannelShuffle2', 'SEBlock', 'SABlock', 'SAConvBlock',
+           'saconv3x3_block', 'DucBlock', 'IBN', 'DualPathSequential', 'Concurrent', 'SequentialConcurrent',
+           'ParametricSequential', 'ParametricConcurrent', 'Hourglass', 'SesquialteralHourglass',
+           'MultiOutputSequential', 'ParallelConcurent', 'DualPathParallelConcurent', 'Flatten', 'HeatmapMaxDetBlock']
+
+import math
+from inspect import isfunction
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.nn.parameter import Parameter
+
+
+def round_channels(channels,
+                   divisor=8):
+    """
+    Round weighted channel number (make divisible operation).
+    Parameters:
+    ----------
+    channels : int or float
+        Original number of channels.
+    divisor : int, default 8
+        Alignment value.
+    Returns:
+    -------
+    int
+        Weighted number of channels.
+    """
+    rounded_channels = max(int(channels + divisor / 2.0) // divisor * divisor, divisor)
+    if float(rounded_channels) < 0.9 * channels:
+        rounded_channels += divisor
+    return rounded_channels
+
+
+class Identity(nn.Module):
+    """
+    Identity block.
+    """
+    def __init__(self):
+        super(Identity, self).__init__()
+
+    def forward(self, x):
+        return x
+
+    def __repr__(self):
+        return '{name}()'.format(name=self.__class__.__name__)
+
+
+class BreakBlock(nn.Module):
+    """
+    Break coonnection block for hourglass.
+    """
+    def __init__(self):
+        super(BreakBlock, self).__init__()
+
+    def forward(self, x):
+        return None
+
+    def __repr__(self):
+        return '{name}()'.format(name=self.__class__.__name__)
+
+
+class Swish(nn.Module):
+    """
+    Swish activation function from 'Searching for Activation Functions,' https://arxiv.org/abs/1710.05941.
+    """
+    def forward(self, x):
+        return x * torch.sigmoid(x)
+
+
+class HSigmoid(nn.Module):
+    """
+    Approximated sigmoid function, so-called hard-version of sigmoid from 'Searching for MobileNetV3,'
+    https://arxiv.org/abs/1905.02244.
+    """
+    def forward(self, x):
+        return F.relu6(x + 3.0, inplace=True) / 6.0
+
+
+class HSwish(nn.Module):
+    """
+    H-Swish activation function from 'Searching for MobileNetV3,' https://arxiv.org/abs/1905.02244.
+    Parameters:
+    ----------
+    inplace : bool
+        Whether to use inplace version of the module.
+    """
+    def __init__(self, inplace=False):
+        super(HSwish, self).__init__()
+        self.inplace = inplace
+
+    def forward(self, x):
+        return x * F.relu6(x + 3.0, inplace=self.inplace) / 6.0
+
+
+def get_activation_layer(activation):
+    """
+    Create activation layer from string/function.
+    Parameters:
+    ----------
+    activation : function, or str, or nn.Module
+        Activation function or name of activation function.
+    Returns:
+    -------
+    nn.Module
+        Activation layer.
+    """
+    assert (activation is not None)
+    if isfunction(activation):
+        return activation()
+    elif isinstance(activation, str):
+        if activation == "relu":
+            return nn.ReLU(inplace=True)
+        elif activation == "relu6":
+            return nn.ReLU6(inplace=True)
+        elif activation == "swish":
+            return Swish()
+        elif activation == "hswish":
+            return HSwish(inplace=True)
+        elif activation == "sigmoid":
+            return nn.Sigmoid()
+        elif activation == "hsigmoid":
+            return HSigmoid()
+        elif activation == "identity":
+            return Identity()
+        else:
+            raise NotImplementedError()
+    else:
+        assert (isinstance(activation, nn.Module))
+        return activation
+
+
+class SelectableDense(nn.Module):
+    """
+    Selectable dense layer.
+    Parameters:
+    ----------
+    in_features : int
+        Number of input features.
+    out_features : int
+        Number of output features.
+    bias : bool, default False
+        Whether the layer uses a bias vector.
+    num_options : int, default 1
+        Number of selectable options.
+    """
+    def __init__(self,
+                 in_features,
+                 out_features,
+                 bias=False,
+                 num_options=1):
+        super(SelectableDense, self).__init__()
+        self.in_features = in_features
+        self.out_features = out_features
+        self.use_bias = bias
+        self.num_options = num_options
+        self.weight = Parameter(torch.Tensor(num_options, out_features, in_features))
+        if bias:
+            self.bias = Parameter(torch.Tensor(num_options, out_features))
+        else:
+            self.register_parameter("bias", None)
+
+    def forward(self, x, indices):
+        weight = torch.index_select(self.weight, dim=0, index=indices)
+        x = x.unsqueeze(-1)
+        x = weight.bmm(x)
+        x = x.squeeze(dim=-1)
+        if self.use_bias:
+            bias = torch.index_select(self.bias, dim=0, index=indices)
+            x += bias
+        return x
+
+    def extra_repr(self):
+        return "in_features={}, out_features={}, bias={}, num_options={}".format(
+            self.in_features, self.out_features, self.use_bias, self.num_options)
+
+
+class DenseBlock(nn.Module):
+    """
+    Standard dense block with Batch normalization and activation.
+    Parameters:
+    ----------
+    in_features : int
+        Number of input features.
+    out_features : int
+        Number of output features.
+    bias : bool, default False
+        Whether the layer uses a bias vector.
+    use_bn : bool, default True
+        Whether to use BatchNorm layer.
+    bn_eps : float, default 1e-5
+        Small float added to variance in Batch norm.
+    activation : function or str or None, default nn.ReLU(inplace=True)
+        Activation function or name of activation function.
+    """
+    def __init__(self,
+                 in_features,
+                 out_features,
+                 bias=False,
+                 use_bn=True,
+                 bn_eps=1e-5,
+                 activation=(lambda: nn.ReLU(inplace=True))):
+        super(DenseBlock, self).__init__()
+        self.activate = (activation is not None)
+        self.use_bn = use_bn
+
+        self.fc = nn.Linear(
+            in_features=in_features,
+            out_features=out_features,
+            bias=bias)
+        if self.use_bn:
+            self.bn = nn.BatchNorm1d(
+                num_features=out_features,
+                eps=bn_eps)
+        if self.activate:
+            self.activ = get_activation_layer(activation)
+
+    def forward(self, x):
+        x = self.fc(x)
+        if self.use_bn:
+            x = self.bn(x)
+        if self.activate:
+            x = self.activ(x)
+        return x
+
+
+class ConvBlock1d(nn.Module):
+    """
+    Standard 1D convolution block with Batch normalization and activation.
+    Parameters:
+    ----------
+    in_channels : int
+        Number of input channels.
+    out_channels : int
+        Number of output channels.
+    kernel_size : int
+        Convolution window size.
+    stride : int
+        Strides of the convolution.
+    padding : int
+        Padding value for convolution layer.
+    dilation : int
+        Dilation value for convolution layer.
+    groups : int, default 1
+        Number of groups.
+    bias : bool, default False
+        Whether the layer uses a bias vector.
+    use_bn : bool, default True
+        Whether to use BatchNorm layer.
+    bn_eps : float, default 1e-5
+        Small float added to variance in Batch norm.
+    activation : function or str or None, default nn.ReLU(inplace=True)
+        Activation function or name of activation function.
+    """
+    def __init__(self,
+                 in_channels,
+                 out_channels,
+                 kernel_size,
+                 stride,
+                 padding,
+                 dilation=1,
+                 groups=1,
+                 bias=False,
+                 use_bn=True,
+                 bn_eps=1e-5,
+                 activation=(lambda: nn.ReLU(inplace=True))):
+        super(ConvBlock1d, self).__init__()
+        self.activate = (activation is not None)
+        self.use_bn = use_bn
+
+        self.conv = nn.Conv1d(
+            in_channels=in_channels,
+            out_channels=out_channels,
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
+            groups=groups,
+            bias=bias)
+        if self.use_bn:
+            self.bn = nn.BatchNorm1d(
+                num_features=out_channels,
+                eps=bn_eps)
+        if self.activate:
+            self.activ = get_activation_layer(activation)
+
+    def forward(self, x):
+        x = self.conv(x)
+        if self.use_bn:
+            x = self.bn(x)
+        if self.activate:
+            x = self.activ(x)
+        return x
+
+
+def conv1x1(in_channels,
+            out_channels,
+            stride=1,
+            groups=1,
+            bias=False):
+    """
+    Convolution 1x1 layer.
+    Parameters:
+    ----------
+    in_channels : int
+        Number of input channels.
+    out_channels : int
+        Number of output channels.
+    stride : int or tuple/list of 2 int, default 1
+        Strides of the convolution.
+    groups : int, default 1
+        Number of groups.
+    bias : bool, default False
+        Whether the layer uses a bias vector.
+    """
+    return nn.Conv2d(
+        in_channels=in_channels,
+        out_channels=out_channels,
+        kernel_size=1,
+        stride=stride,
+        groups=groups,
+        bias=bias)
+
+
+def conv3x3(in_channels,
+            out_channels,
+            stride=1,
+            padding=1,
+            dilation=1,
+            groups=1,
+            bias=False):
+    """
+    Convolution 3x3 layer.
+    Parameters:
+    ----------
+    in_channels : int
+        Number of input channels.
+    out_channels : int
+        Number of output channels.
+    stride : int or tuple/list of 2 int, default 1
+        Strides of the convolution.
+    padding : int or tuple/list of 2 int, default 1
+        Padding value for convolution layer.
+    dilation : int or tuple/list of 2 int, default 1
+        Dilation value for convolution layer.
+    groups : int, default 1
+        Number of groups.
+    bias : bool, default False
+        Whether the layer uses a bias vector.
+    """
+    return nn.Conv2d(
+        in_channels=in_channels,
+        out_channels=out_channels,
+        kernel_size=3,
+        stride=stride,
+        padding=padding,
+        dilation=dilation,
+        groups=groups,
+        bias=bias)
+
+
+def depthwise_conv3x3(channels,
+                      stride=1,
+                      padding=1,
+                      dilation=1,
+                      bias=False):
+    """
+    Depthwise convolution 3x3 layer.
+    Parameters:
+    ----------
+    channels : int
+        Number of input/output channels.
+    strides : int or tuple/list of 2 int, default 1
+        Strides of the convolution.
+    padding : int or tuple/list of 2 int, default 1
+        Padding value for convolution layer.
+    dilation : int or tuple/list of 2 int, default 1
+        Dilation value for convolution layer.
+    bias : bool, default False
+        Whether the layer uses a bias vector.
+    """
+    return nn.Conv2d(
+        in_channels=channels,
+        out_channels=channels,
+        kernel_size=3,
+        stride=stride,
+        padding=padding,
+        dilation=dilation,
+        groups=channels,
+        bias=bias)
+
 
 class ConvBlock(nn.Module):
     """
@@ -274,6 +674,7 @@ def conv7x7_block(in_channels,
         use_bn=use_bn,
         bn_eps=bn_eps,
         activation=activation)
+
 
 
 
