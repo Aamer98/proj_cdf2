@@ -69,7 +69,7 @@ python sbm_scratch_batch_size_512_adam_1e3_eurosat.py
 wait
 
 echo "---------------------------------------<Copying weights>------------------------------------"
-cp -r logs/sbm_scratch_batch_size_512/eurosat ~/proj_cdf2/logs
+cp -r logs/sbm_scratch_adam_1e3 ~/proj_cdf2/logs
 
 echo "---------------------------------------<End of program>-------------------------------------"
 date +"%T"
