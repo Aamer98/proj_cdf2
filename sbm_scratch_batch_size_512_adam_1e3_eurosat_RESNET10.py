@@ -17,6 +17,7 @@ import torch.backends.cudnn as cudnn
 from datasets import miniImageNet_few_shot
 import configs
 from methods.protonet import ProtoNet
+from res10_model import *
 
 
 
@@ -87,14 +88,14 @@ def sbm_finetune(source_loader, target_loader, target_name , num_epochs, ):
     ###############################################################################################
     # load resnet18 model
     save_dir = './logs/sbm_scratch_adam_1e3_resnet10/'    
-    model = torchvision.models.resnet10(pretrained = False)
+    model = resnet10()
     #model.load_state_dict(torch.load('./logs/resnet18_imgnet.tar'))
     
     
     #model = reset_last_block(model)
     
 
-    model.fc = nn.Linear(512, 64)
+    model.output = nn.Linear(512, 64)
     model.cuda()
     model.train()
 
