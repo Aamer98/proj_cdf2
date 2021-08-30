@@ -1,12 +1,11 @@
 {
   "ExpandedNodes": [
     "",
-    "\\jobs",
     "\\jobs\\sbm_scratch_adam_1e3",
     "\\jobs\\sbm_scratch_adam_1e3_resnet10",
     "\\logs",
     "\\logs\\sbm_scratch_adam_1e3_resnet10"
   ],
-  "SelectedNode": "\\sbm_scratch_batch_size_512_adam_1e3_eurosat_RESNET10.py",
+  "SelectedNode": "\\res10_model.py",
   "PreviewInSolutionExplorer": false
 }
