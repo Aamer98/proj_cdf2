@@ -177,7 +177,7 @@ if __name__=='__main__':
     ##################################################################
     pretrained_dataset = "miniImageNet"
 
-    dataset_names = ["EuroSAT"]
+    dataset_names = "EuroSAT"
     novel_loaders = []
 
     #print ("Loading ISIC")
@@ -205,9 +205,9 @@ if __name__=='__main__':
 
     for epch_wt in range(100, 601, 100):
 
-        weight_dirs = "EuroSAT_epoch{}_sbm_scratch_xavier.pth".format(epch_wt)
+        weight_dirs = "EuroSAT_epoch{}_sbm_scratch_xavier.pth".format(str(epch_wt))
         print('*******************'+ main_dir + weight_dirs + '*******************')
-        print (dataset_names[idx])
+        print (dataset_names)
         start_epoch = params.start_epoch
         stop_epoch = params.stop_epoch
         print (freeze_backbone)
