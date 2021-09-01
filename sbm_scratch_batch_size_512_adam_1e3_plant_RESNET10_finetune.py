@@ -178,7 +178,7 @@ if __name__=='__main__':
     ##################################################################
     pretrained_dataset = "miniImageNet"
 
-    dataset_names = "EuroSAT"
+    dataset_names = "CropDisease"
     novel_loaders = []
 
     #print ("Loading ISIC")
@@ -186,16 +186,16 @@ if __name__=='__main__':
     #novel_loader        = datamgr.get_data_loader(aug =False)
     #novel_loaders.append(novel_loader)
     
-    print ("Loading EuroSAT")
-    datamgr             =  EuroSAT_few_shot.SetDataManager(image_size, n_eposide = iter_num, n_query = 15, **few_shot_params)
+    #print ("Loading EuroSAT")
+    #datamgr             =  EuroSAT_few_shot.SetDataManager(image_size, n_eposide = iter_num, n_query = 15, **few_shot_params)
+    #novel_loader        = datamgr.get_data_loader(aug =False)
+    
+
+    print ("Loading CropDisease")
+    datamgr             =  CropDisease_few_shot.SetDataManager(image_size, n_eposide = iter_num, n_query = 15, **few_shot_params)
     novel_loader        = datamgr.get_data_loader(aug =False)
     
 
-    #print ("Loading CropDisease")
-    #datamgr             =  CropDisease_few_shot.SetDataManager(image_size, n_eposide = iter_num, n_query = 15, **few_shot_params)
-    #novel_loader        = datamgr.get_data_loader(aug =False)
-    #novel_loaders.append(novel_loader)
-    
     #print ("Loading ChestX")
     #datamgr             =  Chest_few_shot.SetDataManager(image_size, n_eposide = iter_num, n_query = 15, **few_shot_params)
     #novel_loader        = datamgr.get_data_loader(aug =False)
@@ -206,7 +206,7 @@ if __name__=='__main__':
 
     for epch_wt in range(600, 50, -100):
 
-        weight_dirs = 'EuroSAT_epoch{}_sbm_scratch_batch_size_128_resnet10.pth'.format(str(epch_wt))
+        weight_dirs = 'CropDisease_epoch{}_sbm_scratch_batch_size_128_resnet10.pth'.format(str(epch_wt))
         print('*******************'+ main_dir + weight_dirs + '*******************')
         print (dataset_names)
         start_epoch = params.start_epoch
