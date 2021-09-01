@@ -2,15 +2,13 @@
   "ExpandedNodes": [
     "",
     "\\jobs",
-    "\\jobs\\sbm_scratch_adam_1e3",
-    "\\jobs\\sbm_scratch_adam_1e3_nllMSE",
-    "\\jobs\\sbm_scratch_adam_1e3_resnet10",
-    "\\logs",
+    "\\jobs\\finetune",
     "\\logs\\sbm_scratch_adam_1e3_nllMSE",
     "\\logs\\sbm_scratch_adam_1e3_nllMSE\\eurosat",
+    "\\logs\\sbm_scratch_adam_1e3_nllMSE\\isic",
     "\\logs\\sbm_scratch_adam_1e3_nllMSE\\plant",
     "\\logs\\sbm_scratch_adam_1e3_resnet10"
   ],
-  "SelectedNode": "\\jobs\\sbm_scratch_adam_1e3_nllMSE\\sbm_scratch_batch_size_128_eurosat_nllMSE.sh",
+  "SelectedNode": "\\sbm_scratch_batch_size_512_adam_1e3_xavier_eurosat_finetune.py",
   "PreviewInSolutionExplorer": false
 }
