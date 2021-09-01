@@ -5,7 +5,7 @@ DTD_path 						= '/content/dtd/images/'
 
 ISIC_path = "./data/ISIC2018_Task3_Training_Input"
 ChestX_path = "./data/ChestX-Ray8"
-CropDisease_path = "./data/CropDiseases"
+CropDisease_path = "./data/Plant_disease/dataset/dataset"
 EuroSAT_path = "./data/EuroSAT/2750"
 
 EuroSAT_unlabelled_path = './data/eurosat_unlabelled_dataset'
