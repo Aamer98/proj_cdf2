@@ -82,7 +82,7 @@ def sbm_finetune(source_loader, target_name , num_epochs, ):
      
             _, predicted = outputs.max(1)
             total += labels.size(0)
-            correct += predicted.eq(labels).sum().item()
+            correct += (predicted.eq(labels).sum().item()).cpu()
        
         train_loss=running_loss/len(trainloader)
         accu=100.*correct/total
