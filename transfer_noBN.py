@@ -12,7 +12,7 @@ from itertools import combinations
 import torchvision
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
-from res10_model import *
+from res10_model_noaffine import *
 
 
 from datasets import miniImageNet_few_shot
@@ -32,7 +32,7 @@ def sbm_finetune(source_loader, target_name , num_epochs, ):
 
     ###############################################################################################
     # load resnet18 model
-    save_dir = './logs/vanilla/'    
+    save_dir = './logs/vanilla_noBN/'    
     model = resnet10()
     #model.load_state_dict(torch.load('./logs/resnet18_imgnet.tar'))
     
@@ -96,7 +96,7 @@ def sbm_finetune(source_loader, target_name , num_epochs, ):
         print("epoch: {}/{}".format(epoch, num_epochs))
         if (epoch % 50==0):
 
-            torch.save(model.state_dict(), save_dir + '{}_epoch{}_vanilla.pth'.format(target_name, epoch))
+            torch.save(model.state_dict(), save_dir + '{}_epoch{}_vanilla_noaffine.pth'.format(target_name, epoch))
 
 
 
