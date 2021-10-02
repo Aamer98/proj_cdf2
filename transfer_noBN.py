@@ -43,6 +43,8 @@ def sbm_finetune(source_loader, target_name , num_epochs, ):
     model.fc = nn.Linear(512, 64)
     model.cuda()
     model.train()
+    train_accu = []
+    train_losses = []
 
     for epoch in range(num_epochs):
         
@@ -81,10 +83,10 @@ def sbm_finetune(source_loader, target_name , num_epochs, ):
             running_loss += loss.item()
      
             _, predicted = outputs.max(1)
-            total += labels.size(0)
-            correct += (predicted.eq(labels).sum().item()).cpu()
+            total += source_labels.size(0)
+            correct += predicted.eq(source_labels).sum().item()
        
-        train_loss=running_loss/len(trainloader)
+        train_loss=running_loss/len(base_loader)
         accu=100.*correct/total
    
         train_accu.append(accu)
