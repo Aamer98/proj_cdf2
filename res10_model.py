@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.parameter import Parameter
 
+affine_status = True
 
 def round_channels(channels,
                    divisor=8):
@@ -207,7 +208,7 @@ class DenseBlock(nn.Module):
         if self.use_bn:
             self.bn = nn.BatchNorm1d(
                 num_features=out_features,
-                eps=bn_eps)
+                eps=bn_eps, affine = affine_status)
         if self.activate:
             self.activ = get_activation_layer(activation)
 
@@ -276,7 +277,7 @@ class ConvBlock1d(nn.Module):
         if self.use_bn:
             self.bn = nn.BatchNorm1d(
                 num_features=out_channels,
-                eps=bn_eps)
+                eps=bn_eps, affine = affine_status)
         if self.activate:
             self.activ = get_activation_layer(activation)
 
@@ -446,7 +447,7 @@ class ConvBlock(nn.Module):
         if self.use_bn:
             self.bn = nn.BatchNorm2d(
                 num_features=out_channels,
-                eps=bn_eps)
+                eps=bn_eps, affine = affine_status)
         if self.activate:
             self.activ = get_activation_layer(activation)
 
