@@ -21,7 +21,7 @@ from datasets import miniImageNet_few_shot, DTD_few_shot
 def train(base_loader, model, start_epoch, stop_epoch, save_dir):
     #num_epochs = 1000
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr = 0.001, weight_decay = 0.0001)
+    optimizer = optim.Adam(model.parameters())
     num_epochs = stop_epoch - start_epoch
     num_batches = 0
     for epoch in range(num_epochs):
