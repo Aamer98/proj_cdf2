@@ -66,10 +66,10 @@ def sbm_finetune(source_loader, target_name , num_epochs, ):
 
             optimizer.zero_grad()
 
-            source_outputs = model(source_images)
+            outputs = model(source_images)
 
 
-            ce_loss = loss_CE(source_outputs, source_labels)
+            ce_loss = loss_CE(outputs, source_labels)
 
 
             loss = ce_loss
