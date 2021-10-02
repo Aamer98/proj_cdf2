@@ -23,7 +23,10 @@ from methods.protonet import ProtoNet
 
 from datasets import ISIC_few_shot, EuroSAT_few_shot, CropDisease_few_shot, Chest_few_shot
 
-
+def set_bn_eval(m):
+    classname = m.__class__.__name__
+    if classname.find('BatchNorm2d') != -1:
+        m.eval()
 
 
 
@@ -43,6 +46,7 @@ def sbm_finetune(source_loader, target_name , num_epochs, ):
     model.fc = nn.Linear(512, 64)
     model.cuda()
     model.train()
+    model.apply(set_bn_eval)
 
     for epoch in range(num_epochs):
         
@@ -96,7 +100,7 @@ def sbm_finetune(source_loader, target_name , num_epochs, ):
         print("epoch: {}/{}".format(epoch, num_epochs))
         if (epoch % 50==0):
 
-            torch.save(model.state_dict(), save_dir + '{}_epoch{}_vanilla.pth'.format(target_name, epoch))
+            torch.save(model.state_dict(), save_dir + '{}_epoch{}_vanilla_nogradBN.pth'.format(target_name, epoch))
 
 
 

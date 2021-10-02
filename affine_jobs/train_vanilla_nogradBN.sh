@@ -5,13 +5,13 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-type=REQUEUE
 #SBATCH --mail-type=ALL
-#SBATCH --job-name=transfer_BN.sh
+#SBATCH --job-name=transfer_noBN_grad.sh
 #SBATCH --output=%x-%j.out
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:4
 #SBATCH --ntasks-per-node=32
 #SBATCH --mem=127000M
-#SBATCH --time=0-12:00
+#SBATCH --time=0-10:00
 #SBATCH --account=rrg-ebrahimi
 
 nvidia-smi
@@ -52,7 +52,7 @@ cd proj_cdf2
 echo "********************************************************************************************"
 
 
-python transfer.py
+python transfer_noBN2.py
 
 
 wait
