@@ -71,7 +71,7 @@ def finetune(model_weights, novel_loader, n_query = 15, pretrained_dataset='mini
         #model_path = './from_baseline_resnet18_MiniImageNet_to_EuroSAT.pth'
         #pretrained_model.load_state_dict(torch.load(model_path, map_location='cuda:0'))
 
-        pretrained_model.fc = Identity()
+        pretrained_model.output = Identity()
         ###############################################################################################
 
         classifier = Classifier(512, n_way)

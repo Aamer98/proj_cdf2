@@ -43,11 +43,11 @@ def sbm_finetune(source_loader, target_name , num_epochs, ):
     #model = reset_last_block(model)
     
 
-    model.fc = nn.Linear(512, 64)
+    model.output = nn.Linear(512, 64)
+    print(model)
     model.cuda()
     model.train()
-    model.apply(set_bn_eval)
-
+    
     train_accu = []
     train_losses = []
 
@@ -90,6 +90,8 @@ def sbm_finetune(source_loader, target_name , num_epochs, ):
             _, predicted = outputs.max(1)
             total += source_labels.size(0)
             correct += predicted.eq(source_labels).sum().item()
+            num_batches += 1
+            print("Epoch: {} | Batch: {}".format(epoch, num_batches))
        
         train_loss=running_loss/len(base_loader)
         accu=100.*correct/total
@@ -97,10 +99,9 @@ def sbm_finetune(source_loader, target_name , num_epochs, ):
         train_accu.append(accu)
         train_losses.append(train_loss)
         print('Train Loss: %.3f | Accuracy: %.3f'%(train_loss,accu))
-        num_batches += 1
-        print("Epoch: {} | Batch: {}".format(epoch, num_batches))
-  
+          
         print("epoch: {}/{}".format(epoch, num_epochs))
+
         if (epoch % 50==0):
 
             torch.save(model.state_dict(), save_dir + '{}_epoch{}_vanilla_nogradBN.pth'.format(target_name, epoch))
