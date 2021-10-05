@@ -58,7 +58,7 @@ python transfer_noBN.py
 wait
 
 echo "---------------------------------------<Copying weights>------------------------------------"
-cp -r logs/vanilla ~/proj_cdf2/logs
+cp -r logs/vanilla_noBN ~/proj_cdf2/logs
 
 echo "---------------------------------------<End of program>-------------------------------------"
 date +"%T"
