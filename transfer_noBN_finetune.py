@@ -204,11 +204,11 @@ if __name__=='__main__':
     #novel_loaders.append(novel_loader)
     
     #########################################################################
-    main_dir = './logs/vanilla/'
+    main_dir = './logs/vanilla_noBN/'
 
     for epch_wt in range(600, 50, -100):
 
-        weight_dirs = 'miniImageNet_epoch{}_vanilla.pth'.format(str(epch_wt))
+        weight_dirs = 'miniImageNet_epoch{}_vanilla_noaffine.pth'.format(str(epch_wt))
         print('*******************'+ main_dir + weight_dirs + '*******************')
         print (dataset_names)
         start_epoch = params.start_epoch
