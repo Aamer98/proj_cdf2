@@ -52,7 +52,6 @@ def finetune(model_weights, novel_loader, n_query = 15, pretrained_dataset='mini
         dev = "cuda:0"
     else:
         dev = "cpu"
-    cuda = torch.device(dev)
 
     acc_all = []
     seed_ = 2021
@@ -162,6 +161,7 @@ def finetune(model_weights, novel_loader, n_query = 15, pretrained_dataset='mini
     print('%d Test Acc = %4.2f%% +- %4.2f%%' %(iter_num,  acc_mean, 1.96* acc_std/np.sqrt(iter_num)))
 
 
+
 if __name__=='__main__':
     
 
@@ -206,7 +206,7 @@ if __name__=='__main__':
     #########################################################################
     main_dir = './logs/vanilla/'
 
-    for epch_wt in range(100, 601, 100):
+    for epch_wt in range(600, 50, -100):
 
         weight_dirs = 'miniImageNet_epoch{}_vanilla.pth'.format(str(epch_wt))
         print('*******************'+ main_dir + weight_dirs + '*******************')
