@@ -66,7 +66,7 @@ def finetune(model_weights, novel_loader, n_query = 15, pretrained_dataset='mini
         ###############################################################################################
         # load pretrained model on miniImageNet
         pretrained_model = resnet10()
-        pretrained_model.fc = nn.Linear(512, 64)
+        pretrained_model.output = nn.Linear(512, 64)
         pretrained_model.load_state_dict(torch.load(model_weights))
         #model_path = './from_baseline_resnet18_MiniImageNet_to_EuroSAT.pth'
         #pretrained_model.load_state_dict(torch.load(model_path, map_location='cuda:0'))

@@ -1,9 +1,14 @@
 {
   "ExpandedNodes": [
     "",
+    "\\affine_jobs",
+    "\\data",
     "\\jobs",
-    "\\jobs\\finetune"
+    "\\jobs\\finetune",
+    "\\logs",
+    "\\logs\\vanilla",
+    "\\logs\\vanilla_noBN"
   ],
-  "SelectedNode": "\\jobs\\finetune\\sbm_scratch_batch_size_128_adam_1e3_xavier_plant_1_5_shot.sh",
+  "SelectedNode": "\\affine_jobs\\train_vanilla_nogradBN.sh",
   "PreviewInSolutionExplorer": false
 }
