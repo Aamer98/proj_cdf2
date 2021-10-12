@@ -11,7 +11,7 @@ import os
 import glob
 from itertools import combinations
 import torch.backends.cudnn as cudnn
-from res10_model import *
+from res10_model_noaffine import *
 
 
 import configs
